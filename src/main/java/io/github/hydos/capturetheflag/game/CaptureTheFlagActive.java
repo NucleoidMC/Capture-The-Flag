@@ -1,17 +1,19 @@
 package io.github.hydos.capturetheflag.game;
 
-import io.netty.util.internal.logging.AbstractInternalLogger;
+import io.github.hydos.capturetheflag.misc.CaptureTheFlagPlayer;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagSpawnLogic;
+import io.github.hydos.capturetheflag.misc.CaptureTheFlagTimerBar;
+import io.github.hydos.capturetheflag.config.CaptureTheFlagConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.util.ActionResult;
 import xyz.nucleoid.plasmid.game.GameWorld;
 import xyz.nucleoid.plasmid.game.event.*;
+import xyz.nucleoid.plasmid.game.player.GameTeam;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.BlockBounds;
 import xyz.nucleoid.plasmid.util.PlayerRef;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,25 +24,23 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import io.github.hydos.capturetheflag.CaptureTheFlag;
-import io.github.hydos.capturetheflag.game.map.CaptureTheFlagMap;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagMap;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static xyz.nucleoid.plasmid.util.BroadcastUtils.broadcastMessage;
+import static xyz.nucleoid.plasmid.util.BroadcastUtils.broadcastSound;
 
 public class CaptureTheFlagActive {
     private final CaptureTheFlagConfig config;
 
     public final GameWorld gameWorld;
-    private final CaptureTheFlagMap gameMap;
+    private final CaptureTheFlagMap map;
 
-    // TODO replace with ServerPlayerEntity if players are removed upon leaving
     private final Object2ObjectMap<PlayerRef, CaptureTheFlagPlayer> participants;
+    private final List<GameTeam> teams;
     private final CaptureTheFlagSpawnLogic spawnLogic;
     private final CaptureTheFlagIdle idle;
     private final boolean ignoreWinState;
@@ -49,9 +49,10 @@ public class CaptureTheFlagActive {
     private CaptureTheFlagActive(GameWorld gameWorld, CaptureTheFlagMap map, CaptureTheFlagConfig config, Set<PlayerRef> participants) {
         this.gameWorld = gameWorld;
         this.config = config;
-        this.gameMap = map;
+        this.map = map;
         this.spawnLogic = new CaptureTheFlagSpawnLogic(gameWorld, map);
         this.participants = new Object2ObjectOpenHashMap<>();
+        this.teams = config.teams;
 
         for (PlayerRef player : participants) {
             this.participants.put(player, new CaptureTheFlagPlayer());
@@ -119,10 +120,10 @@ public class CaptureTheFlagActive {
         return true;
     }
 
-    private boolean onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
+    private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
         // TODO handle death
         this.spawnParticipant(player);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     private void spawnParticipant(ServerPlayerEntity player) {
@@ -157,29 +158,6 @@ public class CaptureTheFlagActive {
         this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20);
 
         // TODO tick logic
-    }
-
-    protected static void broadcastMessage(Text message, GameWorld world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.sendMessage(message, false);
-        };
-    }
-
-    protected static void broadcastSound(SoundEvent sound, float pitch, GameWorld world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.playSound(sound, SoundCategory.PLAYERS, 1.0F, pitch);
-        };
-    }
-
-    protected static void broadcastSound(SoundEvent sound,  GameWorld world) {
-        broadcastSound(sound, 1.0f, world);
-    }
-
-    protected static void broadcastTitle(Text message, GameWorld world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            TitleS2CPacket packet = new TitleS2CPacket(TitleS2CPacket.Action.TITLE, message, 1, 5,  3);
-            player.networkHandler.sendPacket(packet);
-        }
     }
 
     private void broadcastWin(WinResult result) {
@@ -233,5 +211,8 @@ public class CaptureTheFlagActive {
         public ServerPlayerEntity getWinningPlayer() {
             return this.winningPlayer;
         }
+    }
+
+    private class TeamData {
     }
 }

@@ -1,4 +1,4 @@
-package io.github.hydos.capturetheflag.game;
+package io.github.hydos.capturetheflag.misc;
 
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;

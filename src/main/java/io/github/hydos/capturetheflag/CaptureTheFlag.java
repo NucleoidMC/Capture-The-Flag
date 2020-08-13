@@ -1,12 +1,12 @@
 package io.github.hydos.capturetheflag;
 
+import io.github.hydos.capturetheflag.game.CaptureTheFlagWaiting;
 import net.fabricmc.api.ModInitializer;
 import xyz.nucleoid.plasmid.game.GameType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import io.github.hydos.capturetheflag.game.CaptureTheFlagConfig;
-import io.github.hydos.capturetheflag.game.CaptureTheFlagWaiting;
+import io.github.hydos.capturetheflag.config.CaptureTheFlagConfig;
 
 public class CaptureTheFlag implements ModInitializer {
 

@@ -1,11 +1,10 @@
-package io.github.hydos.capturetheflag.game.map;
+package io.github.hydos.capturetheflag.map;
 
+import io.github.hydos.capturetheflag.config.CaptureTheFlagMapConfig;
 import xyz.nucleoid.plasmid.game.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.util.BlockBounds;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import io.github.hydos.capturetheflag.game.CaptureTheFlagConfig;
 
 import java.util.concurrent.CompletableFuture;
 

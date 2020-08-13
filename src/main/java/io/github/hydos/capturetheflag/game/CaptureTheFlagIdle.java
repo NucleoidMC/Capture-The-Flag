@@ -1,5 +1,6 @@
 package io.github.hydos.capturetheflag.game;
 
+import io.github.hydos.capturetheflag.config.CaptureTheFlagConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import xyz.nucleoid.plasmid.game.GameWorld;
@@ -9,6 +10,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.plasmid.util.BroadcastUtils;
 
 public class CaptureTheFlagIdle {
     private long closeTime = -1;
@@ -82,11 +84,11 @@ public class CaptureTheFlagIdle {
 
         if ((this.startTime - time) % 20 == 0) {
             if (sec > 0) {
-                CaptureTheFlagActive.broadcastTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), world);
-                CaptureTheFlagActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 1.0F, world);
+                BroadcastUtils.broadcastTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), world);
+                BroadcastUtils.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 1.0F, world);
             } else {
-                CaptureTheFlagActive.broadcastTitle(new LiteralText("Go!").formatted(Formatting.BOLD), world);
-                CaptureTheFlagActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 2.0F, world);
+                BroadcastUtils.broadcastTitle(new LiteralText("Go!").formatted(Formatting.BOLD), world);
+                BroadcastUtils.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 2.0F, world);
             }
         }
     }

@@ -1,5 +1,6 @@
-package io.github.hydos.capturetheflag.game;
+package io.github.hydos.capturetheflag.map;
 
+import io.github.hydos.capturetheflag.CaptureTheFlag;
 import xyz.nucleoid.plasmid.game.GameWorld;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -8,8 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
-import io.github.hydos.capturetheflag.CaptureTheFlag;
-import io.github.hydos.capturetheflag.game.map.CaptureTheFlagMap;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagMap;
 
 public class CaptureTheFlagSpawnLogic {
     private final GameWorld gameWorld;

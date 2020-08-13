@@ -1,6 +1,11 @@
 package io.github.hydos.capturetheflag.game;
 
+import io.github.hydos.capturetheflag.config.CaptureTheFlagConfig;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagMapGenerator;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagSpawnLogic;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ActionResult;
+import xyz.nucleoid.plasmid.game.GameOpenContext;
 import xyz.nucleoid.plasmid.game.GameWorld;
 import xyz.nucleoid.plasmid.game.StartResult;
 import xyz.nucleoid.plasmid.game.config.PlayerConfig;
@@ -14,8 +19,7 @@ import xyz.nucleoid.plasmid.game.rule.RuleResult;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
-import io.github.hydos.capturetheflag.game.map.CaptureTheFlagMap;
-import io.github.hydos.capturetheflag.game.map.CaptureTheFlagMapGenerator;
+import io.github.hydos.capturetheflag.map.CaptureTheFlagMap;
 import xyz.nucleoid.plasmid.game.world.bubble.BubbleWorldConfig;
 
 import java.util.concurrent.CompletableFuture;
@@ -33,16 +37,16 @@ public class CaptureTheFlagWaiting {
         this.spawnLogic = new CaptureTheFlagSpawnLogic(gameWorld, map);
     }
 
-    public static CompletableFuture<Void> open(MinecraftServer server, CaptureTheFlagConfig config) {
-        CaptureTheFlagMapGenerator generator = new CaptureTheFlagMapGenerator(config.mapConfig);
+    public static CompletableFuture<Void> open(GameOpenContext<CaptureTheFlagConfig> context) {
+        CaptureTheFlagMapGenerator generator = new CaptureTheFlagMapGenerator(null);
 
         return generator.create().thenAccept(map -> {
             BubbleWorldConfig worldConfig = new BubbleWorldConfig()
-                    .setGenerator(map.asGenerator())
+                    .setGenerator(map.asGenerator(context.getServer()))
                     .setDefaultGameMode(GameMode.SPECTATOR);
 
-            GameWorld gameWorld = GameWorld.open(server, worldConfig);
-            CaptureTheFlagWaiting waiting = new CaptureTheFlagWaiting(gameWorld, map, config);
+            GameWorld gameWorld = context.openWorld(worldConfig);
+            CaptureTheFlagWaiting waiting = new CaptureTheFlagWaiting(gameWorld, map, context.getConfig());
 
             gameWorld.openGame(builder -> {
                 builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
@@ -84,9 +88,9 @@ public class CaptureTheFlagWaiting {
         this.spawnPlayer(player);
     }
 
-    private boolean onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
+    private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
         this.spawnPlayer(player);
-        return true;
+        return ActionResult.FAIL;
     }
 
     private void spawnPlayer(ServerPlayerEntity player) {
