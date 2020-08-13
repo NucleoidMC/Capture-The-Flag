@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "capturetheflag",
+  "version": "${version}",
+  "name": "CaptureTheFlag",
+  "description": "Capture the flag. pipe edition is the best change my mind",
+  "authors": [
+    "hydos"
+  ],
+  "license": "LGPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.hydos.capturetheflag.CaptureTheFlag"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.9.1",
+    "fabric": "*",
+    "minecraft": "1.16.2",
+    "plasmid": ">=0.1.x"
+  }
+}
